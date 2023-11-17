@@ -1,0 +1,93 @@
+<div class="container" style="margin-top:15%;margin-bottom: 13%">
+    <h1 class="text-center">List Product</h1>
+    <a href="/product/create" class="btn btn-success">add new product</a>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Product Name</th>
+                <th scope="col">Image</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Price</th>
+                <th scope="col">Brands</th>
+                <th scope="col" colspan="2">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#each product}}
+                <tr>
+                    <td>{{sum @index 1}}</td>
+                    <td>{{this.name}}</td>
+                    <td><img src="/img/product/{{this.image}}" alt="img" style="height: 50px;width: 50px"></td>
+                    <td>{{this.quantity}}</td>
+                    <td>{{this.price}}</td>
+                    <td>{{this.brands.name}}</td>
+                    <td>
+                        <a href="/product/{{this._id}}/edit" class="btn btn-warning me-3">Edit</a>
+                        <button class="btn btn-danger"
+                                data-bs-toggle="modal" data-bs-id="{{this._id}}" data-bs-name="{{this.name}}"
+                                data-bs-target="#exampleModal">Delete
+                        </button>
+                    </td>
+                </tr>
+            {{else}}
+                <tr>
+                    <td colspan="6" class="text-center">Không có sản phẩm nào. <a href="/product/create">Thêm mới sản
+                        phẩm</a></td>
+                </tr>
+            {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>
+<form name="delete-product-form" method="post"></form>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <span>Do you want delete product </span><span id="nameProduct" style="color: red"></span>
+                <span> ?</span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-danger" id="delete-product">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const exampleModal = document.getElementById('exampleModal')
+    exampleModal.addEventListener('show.bs.modal', event => {
+        const deleteForms = document.forms['delete-product-form'];
+        const button = event.relatedTarget
+        const idProduct = button.getAttribute('data-bs-id');
+        document.getElementById('nameProduct').innerText = button.getAttribute('data-bs-name');
+        const buttonDelete = document.getElementById('delete-product');
+        buttonDelete.onclick = function () {
+            deleteForms.action = `/product/delete/${idProduct}?_method=DELETE`;
+            deleteForms.submit();
+        }
+    })
+    let check = "{{login.status}}";
+    if (check === "success") {
+        let message = "{{login.message}}";
+        Swal.fire({
+            icon: "success",
+            title: message,
+            showConfirmButton: false,
+            timer: 1500
+        }).then(() => {
+            // Không cần gán giá trị rỗng cho biến check
+        });
+    }
+</script>
